@@ -2,6 +2,7 @@ import requests
 from dotenv import load_dotenv
 import os
 import time
+from transform_data import clean_movies, extract_movie_genres
 
 #pulling API key from .env file
 load_dotenv()
@@ -30,6 +31,4 @@ def fetch_movies(endpoint, pages):
     
     return all_movies
 
-movies = fetch_movies("/movie/popular", pages = 1)
-
-print(f"fetched {len(movies)} movies")
+movies = fetch_movies("/movie/popular", pages = 3)
