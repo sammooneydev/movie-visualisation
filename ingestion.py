@@ -2,7 +2,7 @@ import requests
 from dotenv import load_dotenv
 import os
 import time
-from transform_data import clean_movies, extract_movie_genres
+from transform_data import clean_movies
 
 #pulling API key from .env file
 load_dotenv()
