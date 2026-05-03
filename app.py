@@ -77,24 +77,75 @@ app.layout = html.Div([
 
     #actor node link graph
     html.Div([
-        html.H2("Actor to Movie Node Link Graph"),
-
+        html.H2("Actor to Movie Node Link Graph", style={'textAlign':'center'}),
+    html.Div([
         dcc.Input(
             id="actor-input",
             type="text",
-            placeholder="Enter actor name..."
+            placeholder="Enter name of actor to see films they have been in",
+            style={
+                'backgroundColor': '#1e1e1e',
+                'color': 'white',
+                'border': '1px solid #444',
+                'padding': '10px',
+                'borderRadius': '6px',
+                'marginRight': '10px',
+                'width': '400px',
+                'height': '50px',
+                'justifyContent': 'center'
+            }
         ),
-
-        html.Button("Generate Graph", id="actor-button"),
-
+        ], style={
+            'display': 'flex',
+            'justifyContent': 'center',
+            'alignItems': 'center',
+            'marginBottom': '20px'
+        }),
+    
+        
         cyto.Cytoscape(
             id='actor-graph',
             layout={'name': 'cose'},
             style={'width': '100%', 'height': '600px'},
-            elements=[]
-        )
-
-    ], style={
+            elements=[],
+            
+            stylesheet=[
+        {
+            'selector': 'node[type="actor"]',
+            'style': {
+                'background-color': '#4da3ff',
+                'label': 'data(label)',
+                'color': 'white',
+                'font-size': '12px',
+                'text-valign': 'center',
+                'text-halign': 'center',
+                'width': '40px',
+                'height': '40px'
+            }
+        },
+        {
+            'selector': 'node[type="movie"]',
+            'style': {
+                'background-color': '#9b59b6',
+                'label': 'data(label)',
+                'color': 'white',
+                'font-size': '10px',
+                'text-valign': 'center',
+                'text-halign': 'center',
+                'width': '30px',
+                'height': '30px'
+            }
+        },
+        {
+            'selector': 'edge',
+            'style': {
+                'line-color': '#888',
+                'width': 1
+            }
+        }
+    ]
+)
+], style={
         'padding': '20px',
         'backgroundColor': '#2a2a2a',
         'marginTop': '30px'
@@ -105,13 +156,12 @@ app.layout = html.Div([
 #callback to update movie to actor node graph
 @callback(
     Output("actor-graph", "elements"),
-    Input("actor-button", "n_clicks"),
     Input("actor-input", "value"),
     prevent_initial_call=True
 )
-def update_actor_graph(n_clicks, actor_name):
+def update_actor_graph(actor_name):
 
-    if not actor_name:
+    if not actor_name or len(actor_name) < 3:
         return []
 
     actor = search_actor(actor_name)
