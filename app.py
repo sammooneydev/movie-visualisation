@@ -26,6 +26,7 @@ app.layout = html.Div([
     html.Div(id="movie-card")
 ])
 
+#callback function to update movie-card every 30 mins + on page refresh
 @callback(
     Output('movie-card', 'children'),
     Input('interval-component', 'n_intervals')
