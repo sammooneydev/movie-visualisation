@@ -16,6 +16,22 @@ BASE_URL = "https://api.themoviedb.org/3"
 #passing API key 
 headers = {'Authorization': f"Bearer {API_KEY}"}
 
+def fetch_movies(endpoint, pages):
+    all_movies = []
+    
+    for page in range(1, pages + 1):
+        url = f"{BASE_URL}{endpoint}?page={page}"
+        
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        
+        all_movies.extend(data.get("results", []))
+        
+        #for rate limiting
+        time.sleep(0.2)
+    
+    return all_movies
+
 def fetch_popular():
     url = f"{BASE_URL}/movie/popular?page=1" #getting first page of most popular movies
     
