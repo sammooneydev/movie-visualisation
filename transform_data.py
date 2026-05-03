@@ -75,4 +75,8 @@ def prepare_top_10(movies):
     titles = [m["title"] for m in top_ten]
     ratings = [m["rating"] for m in top_ten]
 
+    #reverse for horizontal bar chart (best at top)
+    titles = titles[::-1]
+    ratings = ratings[::-1]
+
     return titles, ratings
