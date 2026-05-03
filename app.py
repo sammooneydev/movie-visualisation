@@ -27,16 +27,23 @@ app.layout = html.Div([
     #most popular movie right now + bar chart of genres
     html.Div([
 
-    html.Div(id="movie-card", style={'width': '30%'}),
+    html.Div(id="movie-card", style={'width': '280px'}),
 
     html.Div([
         dcc.Graph(id="genre_chart")
-    ], style={'width': '65%'})
+    ], style={
+        'flex': '1',
+        'backgroundColor': '#2a2a2a',
+        'padding': '10px',
+        'borderRadius': '8px',
+        'border': '1px solid #444',
+    })
 
 ], style={
     'display': 'flex',
-    'justifyContent': 'space-between',
+    'justifyContent': 'center',
     'alignItems': 'flex-start',
+    'gap': '20px',
     'padding': '20px'
 })
 ])
@@ -73,7 +80,6 @@ def update_movie(n):
         'borderRadius': '6px',
         'textAlign': 'center',
         'width': '250px',
-        'margin': '20px auto'
     })
 
 #callback to update genre bar chart every 30 mins + on page refresh
@@ -109,14 +115,21 @@ def create_genre_count(counts, genre_lookup):
         names.append(genre_lookup.get(genre_id, "unknown"))
         values.append(count)
         
-    figure = px.bar(x=names, y=values)
+    figure = px.bar(x=names, y=values, title="Distribution of Movies per Genre on Discover Page")
     
     #making figure darker colour to fit with dashboard theme
     figure.update_layout(
     plot_bgcolor='#1e1e1e',
     paper_bgcolor='#1e1e1e',
-    font_color='white'
-    )
+    font_color='white',
+    
+    xaxis_title="Genre",
+    yaxis_title="Number of Movies",
+    
+    title={
+        'x': 0.5,
+        'xanchor': 'center'
+    })
     return figure
 
 if __name__ == '__main__':
