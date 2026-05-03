@@ -129,7 +129,10 @@ def create_genre_count(counts, genre_lookup):
     title={
         'x': 0.5,
         'xanchor': 'center'
-    })
+    },
+    
+    xaxis={'categoryorder':'total descending'}
+    )
     return figure
 
 if __name__ == '__main__':
