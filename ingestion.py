@@ -49,7 +49,18 @@ def fetch_popular():
     return {
         "title": top_movie.get("title"),
         "rating": top_movie.get("vote_average"),
-        "poster_url": f"https://image.tmdb.org/t/p/w500{top_movie.get("poster_path")}", #creating poster url from path returned by API
+        "poster_url": f"https://image.tmdb.org/t/p/w500{top_movie.get('poster_path')}", #creating poster url from path returned by API
         "last_updated": datetime.now().strftime("%d-%m-%Y %H:%M")
     }
     
+def fetch_movies_for_genres():
+    return fetch_movies("/discover/movie", pages=5) #returning first 5 pages of discover tab 
+
+#function to fetch all movie genres from the API
+def fetch_genres():
+    url = f"{BASE_URL}/genre/movie/list"
+    
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    
+    return data.get("genres", [])

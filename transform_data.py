@@ -25,3 +25,38 @@ def clean_movies(raw_movies):
             cleaned.append(cleaned_movie)
 
     return cleaned
+
+#function to split up lists of genre ids that the api spits out
+def extract_movie_genres(raw_movies):
+    movie_genres = []
+
+    for movie in raw_movies:
+        movie_id = movie.get("id")
+        genres = movie.get("genre_ids", [])
+
+        for genre_id in genres:
+            movie_genres.append({
+                "movie_id": movie_id,
+                "genre_id": genre_id
+            })
+
+    return movie_genres
+
+#creating a clean list of genres to make genre lookups easy
+def clean_genres(raw_genres):
+    return [
+        {
+            "id": g["id"],
+            "name": g["name"]
+        }
+        for g in raw_genres
+    ]
+    
+def count_movies_per_genre(movie_genres):
+    counts = {}
+    
+    for genre in movie_genres:
+        genre_id = genre["genre_id"]
+        counts[genre_id] = counts.get(genre_id, 0) + 1 #counting the number of films in any given genre on the fetched pages
+        
+    return counts
