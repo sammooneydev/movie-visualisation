@@ -36,3 +36,4 @@ def fetch_popular():
         "poster_url": f"https://image.tmdb.org/t/p/w500{top_movie.get("poster_path")}", #creating poster url from path returned by API
         "last_updated": datetime.now().strftime("%d-%m-%Y %H:%M")
     }
+    
