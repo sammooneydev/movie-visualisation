@@ -2,6 +2,7 @@ from dash import Dash, html, dcc, callback, Output, Input
 from ingestion import fetch_popular, fetch_movies, fetch_movies_for_genres, fetch_genres, fetch_top_rated, fetch_upcoming_movies
 from transform_data import extract_movie_genres, clean_genres, clean_movies, count_movies_per_genre, get_top_100_movies, prepare_top_10, group_by_release_date
 import plotly.express as px
+import plotly.graph_objects as go
 
 #fetching most popular film from API
 movie = fetch_popular()
@@ -225,24 +226,57 @@ def create_top_movies_chart(titles, ratings):
     return figure
 
 def create_release_heatmap(date_counts):
-    dates = list(date_counts.keys())
-    values = list(date_counts.values())
 
-    figure = px.density_heatmap(
-        x=dates,
-        y=values,
-        title="Heatmap of Upcoming Movie Releases"
-    )
+    months = []
+    days = []
+    values = []
+
+    for key, count in date_counts.items():
+        month, day = key.split("-")
+
+        months.append(int(month))
+        days.append(int(day))
+        values.append(count)
+
+    #build grid-style heatmap (proper calendar feel)
+    figure = go.Figure(data=go.Heatmap(
+        x=days,
+        y=months,
+        z=values,
+        colorscale="Plasma",
+        hovertemplate=
+        "Day: %{x}<br>" +
+        "Month: %{y}<br>" +
+        "Releases: %{z}<extra></extra>"
+    ))
+
+    #mapping numerical values for months to their actual names for more readable plot
+    month_map = {
+        1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr",
+        5: "May", 6: "Jun", 7: "Jul", 8: "Aug",
+        9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"
+    }
 
     figure.update_layout(
+        title="Heatmap of Upcoming Movie Releases",
         plot_bgcolor='#1e1e1e',
         paper_bgcolor='#1e1e1e',
         font_color='white',
-        title={
-            'x': 0.5,
-            'xanchor': 'center'
-        },
-        height=400,
+
+        xaxis_title="Day of Month",
+        yaxis_title="Month",
+
+        #ordering months backwards so that they dislpay properly on the dashboard
+        yaxis=dict(
+        type="category",
+        categoryorder="array",
+        categoryarray=[12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+        tickvals=list(month_map.keys()),
+        ticktext=list(month_map.values())
+    ),
+
+        title_x=0.5,
+        height=450
     )
 
     return figure
