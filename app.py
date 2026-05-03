@@ -1,6 +1,8 @@
 from dash import Dash, html, dcc, callback, Output, Input
-from ingestion import fetch_popular, fetch_movies, fetch_movies_for_genres, fetch_genres, fetch_top_rated, fetch_upcoming_movies
+from ingestion import fetch_popular, fetch_movies, fetch_movies_for_genres, fetch_genres, fetch_top_rated, fetch_upcoming_movies, search_actor, fetch_actor_movies
 from transform_data import extract_movie_genres, clean_genres, clean_movies, count_movies_per_genre, get_top_100_movies, prepare_top_10, group_by_release_date
+from graph_creator import build_actor_movie_graph
+import dash_cytoscape as cyto
 import plotly.express as px
 import plotly.graph_objects as go
 
@@ -11,72 +13,117 @@ app = Dash()
 
 app.layout = html.Div([
 
-    #application header
+    # Header
     html.Div([
-        html.H1(
-            'TMDB Visualisation Dashboard',
-            style={'textAlign': 'center'}
-        )
+        html.H1('TMDB Visualisation Dashboard', style={'textAlign': 'center'})
     ]),
 
     dcc.Interval(
-    id='interval-component',
-    interval=30 * 60 * 1000,  #refresh every 30 mins
-    n_intervals=0
+        id='interval-component',
+        interval=30 * 60 * 1000, #refresh every 30 mins
+        n_intervals=0
     ),
-    
+
     #most popular movie right now + bar chart of genres
     html.Div([
+        html.Div(id="movie-card", style={'width': '280px'}),
 
-    html.Div(id="movie-card", style={'width': '280px'}),
+        html.Div([
+            dcc.Graph(id="genre_chart")
+        ], style={
+            'flex': '1',
+            'backgroundColor': '#2a2a2a',
+            'padding': '10px',
+            'borderRadius': '8px',
+            'border': '1px solid #444',
+        })
 
-    html.Div([
-        dcc.Graph(id="genre_chart")
     ], style={
-        'flex': '1',
-        'backgroundColor': '#2a2a2a',
-        'padding': '10px',
-        'borderRadius': '8px',
-        'border': '1px solid #444',
-    })
-
-], style={
-    'display': 'flex',
-    'justifyContent': 'center',
-    'alignItems': 'flex-start',
-    'gap': '20px',
-    'padding': '20px'
-}),
-    
-    #top 10 movies chart + upcoming release heatmap
-    html.Div([
-    html.Div([
-        dcc.Graph(id="top_movies_chart")
-    ], style={
-        'width': '48%',
-        'backgroundColor': '#2a2a2a',
-        'padding': '15px',
-        'borderRadius': '8px',
-        'border': '1px solid #444'
+        'display': 'flex',
+        'justifyContent': 'center',
+        'alignItems': 'flex-start',
+        'gap': '20px',
+        'padding': '20px'
     }),
 
+    #top 10 movies chart + upcoming release heatmap
     html.Div([
-        dcc.Graph(id="release_heatmap")
+        html.Div([
+            dcc.Graph(id="top_movies_chart")
+        ], style={
+            'width': '48%',
+            'backgroundColor': '#2a2a2a',
+            'padding': '15px',
+            'borderRadius': '8px',
+            'border': '1px solid #444'
+        }),
+
+        html.Div([
+            dcc.Graph(id="release_heatmap")
+        ], style={
+            'width': '48%',
+            'backgroundColor': '#2a2a2a',
+            'padding': '15px',
+            'borderRadius': '8px',
+            'border': '1px solid #444'
+        })
+
     ], style={
-        'width': '48%',
+        'display': 'flex',
+        'justifyContent': 'space-between',
+        'gap': '20px',
+        'padding': '20px'
+    }),
+
+    #actor node link graph
+    html.Div([
+        html.H2("Actor to Movie Node Link Graph"),
+
+        dcc.Input(
+            id="actor-input",
+            type="text",
+            placeholder="Enter actor name..."
+        ),
+
+        html.Button("Generate Graph", id="actor-button"),
+
+        cyto.Cytoscape(
+            id='actor-graph',
+            layout={'name': 'cose'},
+            style={'width': '100%', 'height': '600px'},
+            elements=[]
+        )
+
+    ], style={
+        'padding': '20px',
         'backgroundColor': '#2a2a2a',
-        'padding': '15px',
-        'borderRadius': '8px',
-        'border': '1px solid #444'
+        'marginTop': '30px'
     })
 
-], style={
-    'display': 'flex',
-    'justifyContent': 'space-between',
-    'gap': '20px',
-    'padding': '20px'
-})
 ])
+
+#callback to update movie to actor node graph
+@callback(
+    Output("actor-graph", "elements"),
+    Input("actor-button", "n_clicks"),
+    Input("actor-input", "value"),
+    prevent_initial_call=True
+)
+def update_actor_graph(n_clicks, actor_name):
+
+    if not actor_name:
+        return []
+
+    actor = search_actor(actor_name)
+
+    if not actor:
+        return []
+
+    movies = fetch_actor_movies(actor["id"])
+
+    elements = build_actor_movie_graph(actor, movies)
+
+    return elements
 
 #callback to update upcoming releases heatmap
 @callback(

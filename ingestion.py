@@ -72,3 +72,23 @@ def fetch_top_rated():
 #function to fetch upcoming movie releases
 def fetch_upcoming_movies():
     return fetch_movies("/movie/upcoming", pages=3)
+
+#function to search for an actor and return the best match returned by the API
+def search_actor(name):
+    url = f"{BASE_URL}/search/person?query={name}"
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+    results = data.get("results", [])
+    if not results:
+        return None
+
+    return results[0] #returning first result since that would be the best match
+
+#function to get movies associated with a specific actor
+def fetch_actor_movies(person_id):
+    url = f"{BASE_URL}/person/{person_id}/movie_credits"
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+    return data.get("cast", [])
