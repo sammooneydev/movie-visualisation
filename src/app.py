@@ -122,7 +122,7 @@ app.layout = html.Div([
         {
             'selector': 'node[type="actor"]',
             'style': {
-                'background-color': '#4da3ff',
+                'background-color': '#E69F00',
                 'label': 'data(label)',
                 'color': 'white',
                 'font-size': '12px',
@@ -137,7 +137,7 @@ app.layout = html.Div([
         {
             'selector': 'node[type="movie"]',
             'style': {
-                'background-color': '#9b59b6',
+                'background-color': '#56B4E9',
                 'label': 'data(label)',
                 'color': 'white',
                 'font-size': '10px',
