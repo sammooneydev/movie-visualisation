@@ -1,6 +1,6 @@
 from dash import Dash, html, dcc, callback, Output, Input
-from ingestion import fetch_popular, fetch_movies, fetch_movies_for_genres, fetch_genres, fetch_top_rated
-from transform_data import extract_movie_genres, clean_genres, clean_movies, count_movies_per_genre, get_top_100_movies, prepare_top_10
+from ingestion import fetch_popular, fetch_movies, fetch_movies_for_genres, fetch_genres, fetch_top_rated, fetch_upcoming_movies
+from transform_data import extract_movie_genres, clean_genres, clean_movies, count_movies_per_genre, get_top_100_movies, prepare_top_10, group_by_release_date
 import plotly.express as px
 
 #fetching most popular film from API
@@ -47,20 +47,47 @@ app.layout = html.Div([
     'padding': '20px'
 }),
     
-    #top 100 movies chart
+    #top 10 movies chart + upcoming release heatmap
     html.Div([
     html.Div([
         dcc.Graph(id="top_movies_chart")
     ], style={
+        'width': '48%',
         'backgroundColor': '#2a2a2a',
-        'padding': '10px',
+        'padding': '15px',
         'borderRadius': '8px',
-        'border': '1px solid #444',
-        })
+        'border': '1px solid #444'
+    }),
+
+    html.Div([
+        dcc.Graph(id="release_heatmap")
     ], style={
-    'padding': '20px'
+        'width': '48%',
+        'backgroundColor': '#2a2a2a',
+        'padding': '15px',
+        'borderRadius': '8px',
+        'border': '1px solid #444'
     })
+
+], style={
+    'display': 'flex',
+    'justifyContent': 'space-between',
+    'gap': '20px',
+    'padding': '20px'
+})
 ])
+
+#callback to update upcoming releases heatmap
+@callback(
+    Output('release_heatmap', 'figure'),
+    Input('interval-component', 'n_intervals')
+)
+def update_heatmap(n):
+    raw_movies = fetch_upcoming_movies()
+
+    date_counts = group_by_release_date(raw_movies)
+
+    return create_release_heatmap(date_counts)
 
 #callback to update top movies chart
 @callback(
@@ -193,6 +220,29 @@ def create_top_movies_chart(titles, ratings):
     
     figure.update_traces(
         width=0.6
+    )
+
+    return figure
+
+def create_release_heatmap(date_counts):
+    dates = list(date_counts.keys())
+    values = list(date_counts.values())
+
+    figure = px.density_heatmap(
+        x=dates,
+        y=values,
+        title="Heatmap of Upcoming Movie Releases"
+    )
+
+    figure.update_layout(
+        plot_bgcolor='#1e1e1e',
+        paper_bgcolor='#1e1e1e',
+        font_color='white',
+        title={
+            'x': 0.5,
+            'xanchor': 'center'
+        },
+        height=400,
     )
 
     return figure

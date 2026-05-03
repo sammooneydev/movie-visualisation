@@ -80,3 +80,17 @@ def prepare_top_10(movies):
     ratings = ratings[::-1]
 
     return titles, ratings
+
+#function to group movies by their release date
+def group_by_release_date(movies):
+    counts = {}
+    
+    for movie in movies:
+        date = movie.get("release_date")
+        
+        if not date:
+            continue
+        
+        counts[date] = counts.get(date, 0) + 1
+    
+    return counts

@@ -68,3 +68,7 @@ def fetch_genres():
 
 def fetch_top_rated():
     return fetch_movies("/movie/top_rated", pages=5) #fetching around about the top 100 highest rated movies
+
+#function to fetch upcoming movie releases
+def fetch_upcoming_movies():
+    return fetch_movies("/movie/upcoming", pages=3)
