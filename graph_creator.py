@@ -3,7 +3,7 @@ def build_actor_movie_graph(actor, movies):
 
     actor_id = str(actor["id"])
 
-    # actor node
+    #actor node
     elements.append({
         "data": {
             "id": actor_id,
@@ -12,8 +12,8 @@ def build_actor_movie_graph(actor, movies):
         }
     })
 
-    # movie nodes + edges
-    for movie in movies[:15]:  # LIMIT = IMPORTANT (keeps it readable)
+    #movie nodes + edges
+    for movie in movies[:20]: #limiting nodes to 20 to allow for a good but controlled sample size
         movie_id = str(movie["id"])
 
         elements.append({

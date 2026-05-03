@@ -82,7 +82,7 @@ app.layout = html.Div([
         dcc.Input(
             id="actor-input",
             type="text",
-            placeholder="Enter name of actor to see films they have been in",
+            placeholder="Enter name of actor to generate interactive graph of films they have been in",
             style={
                 'backgroundColor': '#1e1e1e',
                 'color': 'white',
@@ -90,10 +90,11 @@ app.layout = html.Div([
                 'padding': '10px',
                 'borderRadius': '6px',
                 'marginRight': '10px',
-                'width': '400px',
+                'width': '575px',
                 'height': '50px',
                 'justifyContent': 'center'
-            }
+            },
+            debounce = True
         ),
         ], style={
             'display': 'flex',
@@ -102,13 +103,21 @@ app.layout = html.Div([
             'marginBottom': '20px'
         }),
     
-        
         cyto.Cytoscape(
             id='actor-graph',
-            layout={'name': 'cose'},
+            layout={
+                'name': 'cose',
+                'idealEdgeLength': 120,
+                'nodeRepulsion':8000,
+                'gravity': 0.5,
+                'numIter': 1000,
+                'initialTemp': 200
+            },
             style={'width': '100%', 'height': '600px'},
             elements=[],
-            
+            zoom=0.6,
+            minZoom=0.2,
+            maxZoom=2,
             stylesheet=[
         {
             'selector': 'node[type="actor"]',
@@ -120,7 +129,9 @@ app.layout = html.Div([
                 'text-valign': 'center',
                 'text-halign': 'center',
                 'width': '40px',
-                'height': '40px'
+                'height': '40px',
+                'text-outline-width': 2,
+                'text-outline-color': '#000000',
             }
         },
         {
@@ -133,7 +144,9 @@ app.layout = html.Div([
                 'text-valign': 'center',
                 'text-halign': 'center',
                 'width': '30px',
-                'height': '30px'
+                'height': '30px',
+                'text-outline-width': 2,
+                'text-outline-color': '#000000',
             }
         },
         {
