@@ -237,7 +237,7 @@ def update_movie(n):
 
         html.Img(
             src=movie["poster_url"],
-            style={'width': '200px'}
+            style={'width': '150px', 'height': '225px'}
         ),
 
         html.H3(movie["title"]),
