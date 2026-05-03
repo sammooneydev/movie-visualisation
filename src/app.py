@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 #fetching most popular film from API
 movie = fetch_popular()
 
-app = Dash()
+app = Dash(assets_folder="../assets")
 
 app.layout = html.Div([
 
