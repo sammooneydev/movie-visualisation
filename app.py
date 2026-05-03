@@ -1,6 +1,6 @@
 from dash import Dash, html, dcc, callback, Output, Input
-from ingestion import fetch_popular, fetch_movies, fetch_movies_for_genres, fetch_genres
-from transform_data import extract_movie_genres, clean_genres, clean_movies, count_movies_per_genre
+from ingestion import fetch_popular, fetch_movies, fetch_movies_for_genres, fetch_genres, fetch_top_rated
+from transform_data import extract_movie_genres, clean_genres, clean_movies, count_movies_per_genre, get_top_100_movies, prepare_top_10
 import plotly.express as px
 
 #fetching most popular film from API
@@ -45,8 +45,42 @@ app.layout = html.Div([
     'alignItems': 'flex-start',
     'gap': '20px',
     'padding': '20px'
-})
+}),
+    
+    #top 100 movies chart
+    html.Div([
+    html.Div([
+        dcc.Graph(id="top_movies_chart")
+    ], style={
+        'backgroundColor': '#2a2a2a',
+        'padding': '10px',
+        'borderRadius': '8px',
+        'border': '1px solid #444',
+        })
+    ], style={
+    'padding': '20px'
+    })
 ])
+
+#callback to update top movies chart
+@callback(
+    Output('top_movies_chart', 'figure'),
+    Input('interval-component', 'n_intervals')
+)
+def update_top_movies(n):
+    #fetching top rated movies
+    raw_movies = fetch_top_rated()
+
+    #cleaning movie data
+    movies = clean_movies(raw_movies)
+
+    #getting top 100 films
+    top_movies = get_top_100_movies(movies)
+
+    #preparing top 10 for display
+    titles, ratings = prepare_top_10(top_movies)
+
+    return create_top_movies_chart(titles, ratings)
 
 #callback function to update movie-card every 30 mins + on page refresh
 @callback(
@@ -133,6 +167,34 @@ def create_genre_count(counts, genre_lookup):
     
     xaxis={'categoryorder':'total descending'}
     )
+    return figure
+
+def create_top_movies_chart(titles, ratings):
+    figure = px.bar(
+        x=ratings,
+        y=titles,
+        orientation='h',
+        title="Average Rating of Top 10 Highest Rated Movies"
+    )
+
+    #dark theme styling + spacing out bars a smidge
+    figure.update_layout(
+        plot_bgcolor='#1e1e1e',
+        paper_bgcolor='#1e1e1e',
+        font_color='white',
+        xaxis_title="Average Rating",
+        yaxis_title="Movie Title",
+        title={
+            'x': 0.5,
+            'xanchor': 'center'
+        },
+        bargap=0.4
+    )
+    
+    figure.update_traces(
+        width=0.6
+    )
+
     return figure
 
 if __name__ == '__main__':

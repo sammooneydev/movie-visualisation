@@ -16,6 +16,7 @@ BASE_URL = "https://api.themoviedb.org/3"
 #passing API key 
 headers = {'Authorization': f"Bearer {API_KEY}"}
 
+#generic fetching function for use throughout project
 def fetch_movies(endpoint, pages):
     all_movies = []
     
@@ -64,3 +65,6 @@ def fetch_genres():
     data = response.json()
     
     return data.get("genres", [])
+
+def fetch_top_rated():
+    return fetch_movies("/movie/top_rated", pages=5) #fetching around about the top 100 highest rated movies

@@ -60,3 +60,19 @@ def count_movies_per_genre(movie_genres):
         counts[genre_id] = counts.get(genre_id, 0) + 1 #counting the number of films in any given genre on the fetched pages
         
     return counts
+
+#function to get the top 100 films
+def get_top_100_movies(movies):
+    #sorting top 100 in descending order by rating
+    sorted_movies = sorted(movies, key=lambda x: x["rating"], reverse=True)
+    
+    return sorted_movies[:100]
+
+#function to prepare top 10 films for plotting
+def prepare_top_10(movies):
+    top_ten = movies[:10]
+    
+    titles = [m["title"] for m in top_ten]
+    ratings = [m["rating"] for m in top_ten]
+
+    return titles, ratings
