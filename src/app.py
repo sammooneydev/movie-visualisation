@@ -163,7 +163,6 @@ app.layout = html.Div([
         'backgroundColor': '#2a2a2a',
         'marginTop': '30px'
     })
-
 ])
 
 #callback to update movie to actor node graph
