@@ -1,3 +1,5 @@
+from datetime import datetime
+
 def clean_movie(raw_movie):
     if not raw_movie.get("id"):
         return None #skip any invalid rows that might have been returned
@@ -84,13 +86,22 @@ def prepare_top_10(movies):
 #function to group movies by their release date
 def group_by_release_date(movies):
     counts = {}
-    
+
     for movie in movies:
-        date = movie.get("release_date")
-        
-        if not date:
+        date_str = movie.get("release_date")
+
+        if not date_str:
             continue
-        
-        counts[date] = counts.get(date, 0) + 1
-    
+
+        #convert string to date object
+        try:
+            date = datetime.strptime(date_str, "%Y-%m-%d")
+        except:
+            continue
+
+        #group by month + day (calendar style)
+        key = f"{date.month}-{date.day}"
+
+        counts[key] = counts.get(key, 0) + 1
+
     return counts
