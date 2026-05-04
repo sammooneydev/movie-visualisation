@@ -9,6 +9,10 @@ Once that is done, you should set up a python virtual environment and install th
 ```
 pip install -r requirements.txt
 ```
+After this you will need to get a TMDB API key, which you can request via this [link](https://developer.themoviedb.org/docs/getting-started)
+
+You should then set up an environment variable `API_KEY` which should be assigned to your specific API key.
+
 Once that is done, you can run the dashboard using the following command:
 ```
 python src/app.py
